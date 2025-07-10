@@ -3,27 +3,24 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { query } = req.body;
+  const { key, bot_id, query } = req.body;
 
-  if (!query) {
-    return res.status(400).json({ error: 'Missing query' });
+  if (!key || !bot_id || !query) {
+    return res.status(400).json({ error: 'Missing required fields' });
   }
-
-  const COZE_KEY = process.env.COZE_KEY;
-  const BOT_ID = process.env.COZE_BOT_ID;
 
   try {
     const response = await fetch("https://api.coze.com/open_api/v2/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${COZE_KEY}`,
+        "Authorization": `Bearer ${key}`
       },
       body: JSON.stringify({
-        bot_id: BOT_ID,
+        bot_id,
         user: "user-001",
-        query,
-      }),
+        query
+      })
     });
 
     const data = await response.json();
