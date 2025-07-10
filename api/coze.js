@@ -3,10 +3,17 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { key, bot_id, query } = req.body;
+  const { query } = req.body;
 
-  if (!key || !bot_id || !query) {
-    return res.status(400).json({ error: 'Missing required fields' });
+  if (!query) {
+    return res.status(400).json({ error: 'Missing query' });
+  }
+
+  const COZE_KEY = process.env.COZE_KEY;
+  const BOT_ID = process.env.COZE_BOT_ID;
+
+  if (!COZE_KEY || !BOT_ID) {
+    return res.status(500).json({ error: "Missing server config (key or bot_id)" });
   }
 
   try {
@@ -14,10 +21,10 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${key}`
+        "Authorization": `Bearer ${COZE_KEY}`,
       },
       body: JSON.stringify({
-        bot_id,
+        bot_id: BOT_ID,
         user: "user-001",
         query
       })
